@@ -1,20 +1,23 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	let username = '';
-	let password = '';
-	let taskTitle = '';
+	let username: string = '';
+	let password: string = '';
+	let taskTitle: string = '';
 	let token: string | null = null;
 	let tasks: { id: number; title: string; completed: boolean }[] = [];
 
 	const register = async () => {
-		await fetch('http://localhost:3000/register', {
+		const res = await fetch('http://localhost:3000/register', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ username, password })
 		});
-		username = '';
-		password = '';
+
+		if (res.ok) {
+			username = '';
+			password = '';
+		}
 	};
 
 	const login = async () => {
@@ -23,6 +26,7 @@
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ username, password })
 		});
+
 		const data = await res.json();
 		if (data.token) {
 			token = data.token;
