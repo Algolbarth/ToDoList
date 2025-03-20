@@ -66,6 +66,15 @@
 		}
 	};
 
+	const deleteTask = async (id: number) => {
+		if (!token) return;
+		await fetch(`http://localhost:3000/tasks/${id}`, {
+			method: 'DELETE',
+			headers: { Authorization: token }
+		});
+		await loadTasks();
+	};
+
 	onMount(loadTasks);
 </script>
 
@@ -84,7 +93,10 @@
 	<h2>Liste des tâches</h2>
 	<ul>
 		{#each tasks as task}
-			<li>{task.title}</li>
+			<li>
+				{task.title}
+				<button on:click={() => deleteTask(task.id)}>Supprimer</button>
+			</li>
 		{/each}
 	</ul>
 {/if}

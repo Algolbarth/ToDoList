@@ -53,7 +53,7 @@ app.post('/login', (req, res) => {
 });
 
 const authenticateToken = (req, res, next) => {
-    const token = req.headers['authorization'];
+    const token = req.headers.authorization;
     if (!token) return res.status(403).json({ error: 'Accès refusé' });
     
     jsonwebtoken.verify(token, SECRET_KEY, (err, user) => {
@@ -76,6 +76,18 @@ app.get('/tasks', authenticateToken, (req, res) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(tasks);
     });
+});
+
+app.delete("/tasks/:id", (req, res) => {
+    const { id } = req.params;
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        return res.status(401).json({ error: "Accès non autorisé" });
+    }
+
+    db.run("DELETE FROM tasks WHERE id = ?", [id]);
+    res.status(200).json({ message: "Tâche supprimée avec succès" });
 });
 
 app.listen(PORT, () => {
