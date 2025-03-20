@@ -36,6 +36,11 @@ db.serialize(() => {
 
 app.post('/register', (req, res) => {
     const { username, password } = req.body;
+
+    if (!password || password.length < 8) {
+        return res.status(400).json({ error: "Mot de passe trop court: 8 caractères minimum" });
+    }
+
     db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username, password], function(err) {
         if (err) return res.status(400).json({ error: err.message });
         res.json({ message: 'Utilisateur créé avec succès!' });
