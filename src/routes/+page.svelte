@@ -32,7 +32,7 @@
 			token = data.token;
 			username = '';
 			password = '';
-			await loadTasks();
+			await load_task();
 		}
 	};
 
@@ -41,7 +41,7 @@
 		tasks = [];
 	};
 
-	const loadTasks = async () => {
+	const load_task = async () => {
 		if (!token) return;
 		const res = await fetch('http://localhost:3000/tasks', {
 			headers: { Authorization: token }
@@ -49,10 +49,10 @@
 		tasks = await res.json();
 	};
 
-	const addTask = async () => {
+	const add_task = async () => {
 		if (taskTitle.length > 0) {
 			if (!token) return;
-			const res = await fetch('http://localhost:3000/tasks', {
+			await fetch('http://localhost:3000/tasks', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -60,22 +60,21 @@
 				},
 				body: JSON.stringify({ title: taskTitle })
 			});
-			const newTask = await res.json();
-			tasks = [...tasks, newTask];
+			await load_task();
 			taskTitle = '';
 		}
 	};
 
-	const deleteTask = async (id: number) => {
+	const delete_task = async (id: number) => {
 		if (!token) return;
 		await fetch(`http://localhost:3000/tasks/${id}`, {
 			method: 'DELETE',
 			headers: { Authorization: token }
 		});
-		await loadTasks();
+		await load_task();
 	};
 
-	onMount(loadTasks);
+	onMount(load_task);
 </script>
 
 {#if token == null}
@@ -88,14 +87,14 @@
 
 	<h2>Ajouter une tâche</h2>
 	<input type="text" bind:value={taskTitle} placeholder="Nouvelle tâche" />
-	<button on:click={addTask}>Ajouter</button>
+	<button on:click={add_task}>Ajouter</button>
 
 	<h2>Liste des tâches</h2>
 	<ul>
 		{#each tasks as task}
 			<li>
 				{task.title}
-				<button on:click={() => deleteTask(task.id)}>Supprimer</button>
+				<button on:click={() => delete_task(task.id)}>Supprimer</button>
 			</li>
 		{/each}
 	</ul>
