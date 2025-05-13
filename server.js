@@ -34,6 +34,13 @@ db.serialize(() => {
     )`);
 });
 
+app.get('/users', (req, res) => {
+    db.all('SELECT * FROM users', [], (err, tasks) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(tasks);
+    });
+});
+
 app.post('/register', (req, res) => {
     const { username, password } = req.body;
 

@@ -5,6 +5,7 @@
 	let password: string = '';
 	let taskTitle: string = '';
 	let token: string | null = null;
+	let users: { id: number; username: string; password: string }[] = [];
 	let tasks: { id: number; title: string; completed: boolean }[] = [];
 
 	const register = async () => {
@@ -17,6 +18,7 @@
 		if (res.ok) {
 			username = '';
 			password = '';
+			await load_user_list();
 		}
 	};
 
@@ -39,6 +41,11 @@
 	const logout = () => {
 		token = null;
 		tasks = [];
+	};
+
+	const load_user_list = async () => {
+		const res = await fetch('http://localhost:3000/users', {});
+		users = await res.json();
 	};
 
 	const load_task = async () => {
@@ -74,7 +81,10 @@
 		await load_task();
 	};
 
-	onMount(load_task);
+	onMount(() => {
+		load_task();
+		load_user_list();
+	});
 </script>
 
 {#if token == null}
@@ -82,6 +92,15 @@
 	<input type="password" bind:value={password} placeholder="Mot de passe" />
 	<button on:click={register}>S'inscrire</button>
 	<button on:click={login}>Se connecter</button>
+
+	<h2>Liste des utilisateurs</h2>
+	<ul>
+		{#each users as user}
+			<li>
+				{user.username}: {user.password}
+			</li>
+		{/each}
+	</ul>
 {:else}
 	<button on:click={logout}>Se déconnecter</button>
 
